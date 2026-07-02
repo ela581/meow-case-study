@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Radar, FileText, CalendarDays, Loader2, Check, ChevronRight, Sparkles, Clock } from "lucide-react";
+import { Radar, FileText, CalendarDays, Loader2, Check, ChevronRight, Sparkles, Clock, RotateCcw, X } from "lucide-react";
 
 const KEYWORDS = [
   { kw: "girişimler için yüksek faizli mevduat hesabı", hacim: 880, zorluk: 24 },
@@ -53,20 +53,14 @@ Referans: Samimi ama bilgi dolu bir ton kullan, listelercik ve alt başlıklarla
 Değerlendirme: Bir editör bunu 30 dakika içinde gözden geçirip yayına hazırlayacak, o yüzden net ve düzenli yaz.
 Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-280 kelime civarında olsun. Markdown başlık (#, ##) kullan.`;
 
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
+        body: JSON.stringify({ prompt }),
       });
       const data = await response.json();
-      const text = (data.content || [])
-        .map((b) => (b.type === "text" ? b.text : ""))
-        .join("\n")
-        .trim();
+      if (!response.ok) throw new Error(data?.error || "İstek başarısız oldu");
+      const text = (data.text || "").trim();
       if (!text) throw new Error("Boş yanıt geldi");
       setDraft(text);
       setStage(3);
@@ -84,6 +78,22 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
       setError("Üretim sırasında bir sorun oluştu. Tekrar dener misin?");
       setStage(1);
     }
+  }
+
+  function resetDraft() {
+    setStage(0);
+    setSelected(null);
+    setDraft("");
+    setError("");
+    setElapsed(0);
+  }
+
+  function removeCalendarEntry(idx) {
+    setCalendar((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function clearCalendar() {
+    setCalendar([]);
   }
 
   const stages = [
@@ -184,6 +194,11 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
             {stage === 2 && (
               <span style={styles.timer}><Clock size={12} /> {elapsed.toFixed(1)}s</span>
             )}
+            {(stage === 3 || error) && (
+              <button onClick={resetDraft} style={styles.clearBtn}>
+                <RotateCcw size={12} /> Temizle
+              </button>
+            )}
           </div>
           <div style={styles.draftCard}>
             {stage === 2 && (
@@ -215,6 +230,11 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
         <div style={styles.sectionHead}>
           <CalendarDays size={14} color="#2DD4A7" />
           <span style={styles.sectionLabel}>03 — İçerik Takvimi</span>
+          {calendar.length > 0 && (
+            <button onClick={clearCalendar} style={styles.clearBtn}>
+              <RotateCcw size={12} /> Tümünü Temizle
+            </button>
+          )}
         </div>
         {calendar.length === 0 ? (
           <div style={styles.emptyCal}>Henüz planlanmış içerik yok. Bir anahtar kelime seçtiğinde otomatik eklenecek.</div>
@@ -225,6 +245,9 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
                 <div style={styles.calDate}>{fmtDate(c.date)}</div>
                 <div style={styles.calKw}>{c.kw}</div>
                 <div style={styles.calBadge}>{c.status}</div>
+                <button onClick={() => removeCalendarEntry(i)} style={styles.rowDeleteBtn} aria-label="Sil">
+                  <X size={13} />
+                </button>
               </div>
             ))}
           </div>
@@ -287,6 +310,17 @@ const styles = {
   timer: {
     marginLeft: "auto", fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
     color: "#E8B854", display: "flex", alignItems: "center", gap: 4,
+  },
+  clearBtn: {
+    marginLeft: "auto", display: "flex", alignItems: "center", gap: 5,
+    background: "transparent", border: "1px solid #1E3A33", borderRadius: 7,
+    padding: "5px 9px", fontSize: 11, color: "#7FA396", cursor: "pointer",
+    fontFamily: "'Inter', sans-serif", font: "inherit",
+  },
+  rowDeleteBtn: {
+    background: "transparent", border: "none", color: "#5C8377",
+    cursor: "pointer", flexShrink: 0, padding: 4, display: "flex",
+    alignItems: "center", justifyContent: "center",
   },
 
   kwGrid: { display: "flex", flexDirection: "column", gap: 8 },
