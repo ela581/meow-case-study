@@ -51,7 +51,7 @@ export default function ContentPipeline() {
 Bağlam: Meow adında, AI botlarının doğrudan banka işlemi yapabildiği bir B2B dijital bankacılık girişimi için yazıyorsun. Hedef kitle: ABD'deki küçük/orta ölçekli girişim kurucuları.
 Referans: Samimi ama bilgi dolu bir ton kullan, listelercik ve alt başlıklarla yapılandır.
 Değerlendirme: Bir editör bunu 30 dakika içinde gözden geçirip yayına hazırlayacak, o yüzden net ve düzenli yaz.
-Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-280 kelime civarında olsun. Markdown başlık (#, ##) kullan.`;
+Format: Türkçe yaz. Başlık + 4-5 alt başlık + kısa kapanış. Toplam 550-650 kelime civarında olsun. Markdown başlık (#, ##) kullan.`;
 
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -98,7 +98,7 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
 
   const stages = [
     { label: "Anahtar Kelime", icon: Radar },
-    { label: "Taslak (Claude)", icon: FileText },
+    { label: "Taslak (Gemini)", icon: FileText },
     { label: "Takvim", icon: CalendarDays },
   ];
   const activeIdx = stage === 0 ? -1 : stage === 1 ? 0 : stage === 2 ? 1 : 2;
@@ -119,7 +119,7 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
         <div style={styles.eyebrow}>OTOMASYON PROTOTİPİ &middot; BÖLÜM 10 BONUS</div>
         <h1 style={styles.title}>İçerik Üretim Hattı</h1>
         <p style={styles.subtitle}>
-          Anahtar kelime tespiti → Claude ile taslak üretimi → içerik takvimi. Meow vaka analizinde
+          Anahtar kelime tespiti → Gemini ile taslak üretimi → içerik takvimi. Meow vaka analizinde
           önerilen otomasyon sisteminin çalışan bir örneği.
         </p>
       </header>
@@ -190,7 +190,7 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
         <section style={styles.section}>
           <div style={styles.sectionHead}>
             <FileText size={14} color="#2DD4A7" />
-            <span style={styles.sectionLabel}>02 — Claude Taslağı</span>
+            <span style={styles.sectionLabel}>02 — Gemini Taslağı</span>
             {stage === 2 && (
               <span style={styles.timer}><Clock size={12} /> {elapsed.toFixed(1)}s</span>
             )}
@@ -255,7 +255,7 @@ Format: Türkçe yaz. Başlık + 3-4 alt başlık + kısa kapanış. Toplam 220-
       </section>
 
       <footer style={styles.footer}>
-        Kurgu: Ahrefs benzeri araç → Claude taslağı → editör onayı (~30 dk) → otomatik takvim + sosyal paylaşım.
+        Kurgu: Ahrefs benzeri araç → Gemini taslağı → editör onayı (~30 dk) → otomatik takvim + sosyal paylaşım.
         Kaynak: Meow Vaka Analizi, Bölüm 10 &amp; Bonus.
       </footer>
 
